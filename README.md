@@ -2,7 +2,7 @@
 
 
 ***Description:***
-This Python (v3.6) downloads the HTML markup from the specified URL ("parent page") and all URLs it links to. HTML <body> content from each URL is appended to a single file (default: download.html), saved as separate HTML files, or saved a separate PDF files, in the current directory in the order the links appear in the parent page. No "a href" links contained in the resulting file are altered, so only anchor links will work in the HTML or PDF files (in a combined HTML file, duplicate anchor names could be problematic). All other relative links will be dead. Absolute URL links should still be live.
+This Python (v3.6) program runs from the command line and downloads the HTML markup from the specified URL ("parent page") and all URLs it links to. HTML <body> content from each URL is appended to a single file (default: download.html), saved as separate HTML files, or saved a separate PDF files, in the current directory in the order the links appear in the parent page. No "a href" links contained in the resulting file are altered, so only anchor links will work in the HTML or PDF files (in a combined HTML file, duplicate anchor names could be problematic). All other relative links will be dead. Absolute URL links should still be live.
 
 ***Intent:***
 DownloadAll.py is one of several tools for downloading and processing multipage HTML documents for either printout and/or loading onto a tablet reader. This follows the UNIX/LINUX philosophy of creating and using small single-purpose applications instead of large catchall ones. The entire collection of these tools is intended for personal "fair use" of online materials and must not be used for other purposes.
