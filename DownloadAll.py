@@ -21,81 +21,22 @@
 # used for other purposes.
 # =======================================
 
+# == Standard library ==
 import argparse
+import logging
+logger = logging.getLogger()
 import os
 import re
 import requests
 import sys
 import urllib.request
 import urllib.error
-
+# == PyPI modules/packages ==
 from bs4 import BeautifulSoup
 from colorama import init
 init()
 import pdfkit
 
-# ================================================
-# Setup and handle command-line arguments.
-# Could be moved or cast into a function, but why?
-# ================================================
-
-parser = argparse.ArgumentParser(
-    prog='DownloadAll.py', description='''\nDownloads all the pages from the 
-    links at the entered URL ("parent page"). Pages are saved as either HTML or 
-    PDF files in the directory/folder in which DownloadAll is invoked. 
-    Filenames are derived from the source HTML page names 
-    <http://.../filename.html>. Files by the same name in the current directory 
-    will be overwritten.''')
-
-parser.add_argument('url2open', help='Enter the full URL of the parent page.')
-
-parser.add_argument('sitepath', default='None', nargs='?', help=
-    '''Optional. If omitted, the site url path of the parent page will be 
-    appended to relative links.''')
-
-parser.add_argument('-o', '--outfile', default='download.html', nargs='?',help=
-    '''Optional output file name (default is download.html). 
-    Usage: --outfile=filename.''')
-
-parser.add_argument('-s', '--separate', action='store_true', help=
-    '''Optional flag. If present, pages are saved to separate files instead of 
-    appended to one combined one. File names are taken from each downloaded 
-    page (<http://.../filename.html>).''')
-
-parser.add_argument('-p', '--pdf', action='store_true', help='''Optional flag. 
-    If present, pages are saved as separate PDF files 
-    (<http://.../filename.html> saved as <filename.pdf>). 
-    The -o and -s options have no effect when -p is used. Since external 
-    programs exist to combine pdf files, there is no option here to save a 
-    combined PDF file.''')
-
-args = parser.parse_args()
-
-# Make sitepath an optional argument. If it's left off, then assume the sitepath
-# of the parent page is the correct one to use in getlinks() for relative links.
-# Create it from args.url2open.
-
-# Add 'http://' if user left it off the URL.    #
-http = re.compile(r'http://', re.IGNORECASE)    # Pattern-object globals
-                                                # used also in getlinks().
-https = re.compile(r'https://', re.IGNORECASE)  #
-
-if http.match(str(args.url2open)) or https.match(str(args.url2open)):
-    pass
-else:
-    args.url2open = 'http://' + args.url2open  # "http://" will also work in
-                                               # place of "https://" in a URL.
-if args.sitepath == 'None':
-    sitepath = (args.url2open.rsplit(sep='/', maxsplit=1))[0] + '/'
-else:
-    sitepath = args.sitepath
-
-if args.separate:
-    fileflag = 'html'
-elif args.pdf:
-    fileflag = 'pdf'
-else:
-    fileflag = 'None'
 
 # ================================================
 # Function definitions.
@@ -193,6 +134,67 @@ def savefiles(linklist, outputflag):
 
 
 def main():
+    """"Setup and handle command-line arguments and call main functions"""
+    parser = argparse.ArgumentParser(
+        prog='DownloadAll.py', description='''\nDownloads all the pages from 
+        the Links at the entered URL ("parent page"). Pages are saved as either 
+        HTML or PDF files in the directory/folder in which DownloadAll is 
+        invoked. Filenames are derived from the source HTML page names 
+        <http://.../filename.html>. Files by the same name in the current 
+        directory will be overwritten.''')
+
+    parser.add_argument('url2open',
+        help='Enter the full URL of the parent page.')
+
+    parser.add_argument('sitepath', default='None', nargs='?', help=
+        '''Optional. If omitted, the site url path of the parent page will be 
+        appended to relative links.''')
+
+    parser.add_argument('-o', '--outfile', default='download.html', nargs='?',
+        help='''Optional output file name (default is download.html). Usage: 
+        --outfile=filename.''')
+
+    parser.add_argument('-s', '--separate', action='store_true', help=
+        '''Optional flag. If present, pages are saved to separate files instead 
+        of appended to one combined one. File names are taken from each 
+        downloaded page (<http://.../filename.html>).''')
+
+    parser.add_argument('-p', '--pdf', action='store_true', help=
+    '''Optional flag. If present, pages are saved as separate PDF files 
+        (<http://.../filename.html> saved as <filename.pdf>). The -o and -s 
+        options have no effect when -p is used. Since external programs exist 
+        to combine pdf files, there is no option here to save a combined PDF 
+        file.''')
+
+    args = parser.parse_args()
+
+    # Make sitepath an optional argument. If it's left off, then assume the
+    # sitepath of the parent page is the correct one to use in getlinks() for
+    # relative links. Create it from args.url2open.
+
+    # Add 'http://' if user left it off the URL.    #
+    http = re.compile(r'http://', re.IGNORECASE)  # Pattern-object globals
+                                                  # used also in getlinks().
+    https = re.compile(r'https://', re.IGNORECASE)
+
+    if http.match(str(args.url2open)) or https.match(str(args.url2open)):
+        pass
+    else:
+        args.url2open = 'http://' + args.url2open  # "http://" will also work in
+                                                 # place of "https://" in a URL.
+    if args.sitepath == 'None':
+        sitepath = (args.url2open.rsplit(sep='/', maxsplit=1))[0] + '/'
+    else:
+        sitepath = args.sitepath
+
+    if args.separate:
+        fileflag = 'html'
+    elif args.pdf:
+        fileflag = 'pdf'
+    else:
+        fileflag = 'None'
+
+    # Main function calls
     ask4permission()        # Check to make sure user has write permission.
                             # See the function's doc string for rationale.
 
@@ -202,12 +204,8 @@ def main():
 
     savefiles(all_links, fileflag)
 
-if __name == '__main__':
+if __name__ == '__main__':
     main()
 
-
-
-# TODO: Commit on GitHub.
-
-
+# TODO: added logging
 
