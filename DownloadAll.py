@@ -24,7 +24,9 @@
 # == Standard library ==
 import argparse
 import logging
-logger = logging.getLogger()
+# Setup logging
+logging.basicConfig(filename='DA_download.log', level=logging.INFO,
+                    format='%(asctime)s: %(message)s')
 import os
 import re
 import requests
@@ -77,7 +79,7 @@ def getlinks(url, sitepath):
         soup = BeautifulSoup(html_page, 'lxml')
         links = []
         fixedlinks = []
-        # http = re.compile(r'http://', re.IGNORECASE)  # A 'pattern object'
+        http = re.compile(r'http://', re.IGNORECASE)  # A 'pattern object'
         for link in soup.findAll('a', attrs={'href': re.compile('html$')}):
             links.append(link.get('href'))
         # If an element in the list (all_links) does not start with 'http' (as
@@ -92,7 +94,7 @@ def getlinks(url, sitepath):
         return fixedlinks
 
 
-def savefiles(linklist, outputflag):
+def savefiles(linklist, outputflag, args):
     """Using links collected by getlinks() and parsed by bs4, this function
     saves file(s) of the html contents of the <body> tag of web pages in one
     of three ways: as separate html files, as separate PDF files (using the 
@@ -127,6 +129,8 @@ def savefiles(linklist, outputflag):
             else:
                  with open(args.outfile, 'a') as outfile:
                      outfile.write(str(htmltext))
+
+            logging.info('Saved {}'.format(link))
         except UnicodeError:                          # Non-fatal error
             print('\033[1m\033[31m' + '   Unicode codec error. One or more \
                 characters may be corrupted in: ' + link + '\033[0m')
@@ -167,6 +171,7 @@ def main():
         file.''')
 
     args = parser.parse_args()
+    print(args)
 
     # Make sitepath an optional argument. If it's left off, then assume the
     # sitepath of the parent page is the correct one to use in getlinks() for
@@ -202,10 +207,13 @@ def main():
         # from args.url2open, args.sitepath is not referenced directly here as
         # args.url2open is.
 
-    savefiles(all_links, fileflag)
+    savefiles(all_links, fileflag, args)
 
 if __name__ == '__main__':
     main()
 
 # TODO: added logging
 
+# %(asctime)s
+# %(funcName)s
+# %(name)s
